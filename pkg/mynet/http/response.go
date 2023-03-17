@@ -3,6 +3,7 @@ package http
 import (
 	"fmt"
 	"net/textproto"
+	"strconv"
 )
 
 type Response struct {
@@ -14,14 +15,18 @@ type Response struct {
 }
 
 // Create a new Response object
-func NewResponse() *Response {
+func NewResponse(status int, message string, body string) *Response {
 	return &Response{
 		proto:   "HTTP/1.1",
-		status:  200,
-		message: "OK",
-		body:    "Hello World!",
+		status:  status,
+		message: message,
+		body:    body,
 		header:  make(textproto.MIMEHeader),
 	}
+}
+
+func (r *Response) SetHeader(key string, value string) {
+	r.header.Set(key, value)
 }
 
 func (r *Response) Seriazie() []byte {
@@ -29,11 +34,15 @@ func (r *Response) Seriazie() []byte {
 }
 
 func (r *Response) ToString() string {
-	responseString := fmt.Sprintf("HTTP/1.1 %d %s\r\n"+
-		"Content-Type: text/html; charset=utf-8\r\n"+
-		"Content-Length: %d\r\n"+
-		"\r\n"+
-		"<h1>%s</h1>", r.status, r.message, len(r.body)+9, r.body) // +9 for the <h1></h1> tags
-	fmt.Println(responseString)
+	r.header.Set("Content-Type", "text/html; charset=utf-8")
+	r.header.Set("Content-Length", strconv.Itoa(len(r.body))) // +9 for the <h1></h1> tags
+	fmt.Println(r.header)
+	responseString := fmt.Sprintf("HTTP/1.1 %d %s\r\n", r.status, r.message)
+	for key, values := range r.header {
+		for _, value := range values {
+			responseString += fmt.Sprintf("%s: %s\r\n", key, value)
+		}
+	}
+	responseString += fmt.Sprintf("\r\n%s", r.body)
 	return responseString
 }
