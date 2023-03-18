@@ -66,7 +66,7 @@ This will generate an executable file named `main`.
 
 ## Running the HTTP server
 
-To run the HTTP server, execute the `http-server` executable:
+To run the HTTP server, execute the `main` executable:
 
 ```bash
 ./main --ip_addr=127.0.0.1 --port=8080
