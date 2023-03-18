@@ -51,5 +51,5 @@ func (r *Router) ServeHTTP(rq io.Reader, w io.Writer) error {
 			return err
 		}
 	}
-	return NotFoundHandler(rq, w)
+	return ErrorHandlerWrapper(404, "Not Found", w)
 }
